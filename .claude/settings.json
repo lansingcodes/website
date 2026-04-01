@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/adambroadbent/code/github/lansingcodes/api/**)",
+      "Read(//Users/adambroadbent/code/github/lansingcodes/www/**)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --eslint --no-src-dir --import-alias \"@/*\" --skip-install)",
+      "Bash(npm install:*)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/www/assets/images/capitol.jpg /Users/adambroadbent/code/github/lansingcodes/website/public/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/www/assets/images/icon-tall-square-fixed-300-transparent.png /Users/adambroadbent/code/github/lansingcodes/website/public/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/www/assets/images/sponsors-feature.jpg /Users/adambroadbent/code/github/lansingcodes/website/public/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/www/assets/images/sponsors-feature.webp /Users/adambroadbent/code/github/lansingcodes/website/public/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/www/public/favicon.ico /Users/adambroadbent/code/github/lansingcodes/website/public/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/www/public/resources-for-lansing-coders.jpg /Users/adambroadbent/code/github/lansingcodes/website/public/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/api/data/groups.json /Users/adambroadbent/code/github/lansingcodes/website/data/)",
+      "Bash(cp /Users/adambroadbent/code/github/lansingcodes/api/data/sponsors.json /Users/adambroadbent/code/github/lansingcodes/website/data/)",
+      "Bash(npx agent-browser:*)",
+      "Bash(agent-browser:*)",
+      "Bash(npm run:*)",
+      "Read(//usr/local/bin/**)",
+      "Bash(grep -r \"agent-browser\\\\|dogfood\\\\|testmode\\\\|experimental\" /Users/adambroadbent/code/github/lansingcodes/website --include=*.json --include=*.ts --include=*.tsx --include=*.js --include=*.jsx --include=*.md --exclude-dir=node_modules --exclude-dir=.next)",
+      "Read(//Users/adambroadbent/.local/bin/**)",
+      "Bash(npm list:*)",
+      "Bash(npm view:*)",
+      "Read(//Users/adambroadbent/code/github/lansingcodes/**)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(''''bin:'''', d.get\\(''''bin'''',{}\\)\\); print\\(''''description:'''', d.get\\(''''description'''',''''''''\\)\\)\")",
+      "Skill(agent-browser)",
+      "Skill(agent-browser:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/adambroadbent/code/github/lansingcodes/www/public/sponsors",
+      "/Users/adambroadbent/code/github/lansingcodes/website/.claude"
+    ]
+  }
+}

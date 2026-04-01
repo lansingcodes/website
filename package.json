@@ -1,0 +1,46 @@
+{
+  "name": "lansing-codes-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "sync": "npm run sync:all",
+    "sync:all": "curl -s -X POST http://localhost:3000/api/sync/all -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
+    "sync:events": "curl -s -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
+    "sync:groups": "curl -s -X POST http://localhost:3000/api/sync/groups -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
+    "sync:sponsors": "curl -s -X POST http://localhost:3000/api/sync/sponsors -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-brands-svg-icons": "^7.2.0",
+    "@fortawesome/free-regular-svg-icons": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/react-fontawesome": "^3.2.0",
+    "axios": "^1.13.6",
+    "date-fns": "^4.1.0",
+    "firebase-admin": "^13.7.0",
+    "ical2json": "^4.1.2",
+    "lodash": "^4.17.23",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^5.1.2",
+    "@tailwindcss/postcss": "^4",
+    "@types/lodash": "^4.17.24",
+    "@types/moment": "^2.11.29",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
