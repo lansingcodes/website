@@ -12,6 +12,15 @@ const montserrat = Montserrat({
   display: 'swap',
 })
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Lansing Codes',
+  url: 'https://www.lansing.codes/',
+  description: 'Resources for coders and community organizers of Lansing, MI.',
+  logo: 'https://www.lansing.codes/favicon.ico'
+}
+
 export const metadata: Metadata = {
   title: 'Lansing Codes',
   description: 'Resources for coders and community organizers of Lansing, MI.',
@@ -55,6 +64,10 @@ export default function RootLayout({
   return (
     <html lang="en-US" className={montserrat.variable}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <link rel="icon" type="image/png" href="/favicon.ico?v=1" />
         <link rel="apple-touch-icon" type="image/png" href="/favicon.ico?v=1" />
         <link rel="image_src" type="image/png" href="/favicon.ico?v=1" />
