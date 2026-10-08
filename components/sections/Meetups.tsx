@@ -1,6 +1,6 @@
 import SectionHeading from '@/components/SectionHeading'
 import MeetupCard from '@/components/cards/MeetupCard'
-import type { Group } from '@/lib/firestore/groups'
+import type { Group } from '@/lib/types'
 
 interface MeetupsProps {
   groups: Group[]

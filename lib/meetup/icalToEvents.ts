@@ -4,7 +4,7 @@ import { parseDescription } from './helpers/parseDescription'
 import { parseVenue } from './helpers/parseVenue'
 import { parseAddress } from './helpers/parseAddress'
 import { parseStartTime } from './helpers/parseStartTime'
-import type { Event } from '@/lib/firestore/events'
+import type { Event } from '@/lib/types'
 
 export function icalToEvents(groupKey: string, ical: string): Record<string, Omit<Event, 'id'> & { id: string }> {
   const icalJson = ical2json.convert(ical)
