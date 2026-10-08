@@ -9,9 +9,7 @@
     "lint": "eslint",
     "sync": "npm run sync:all",
     "sync:all": "curl -s -X POST http://localhost:3000/api/sync/all -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:events": "curl -s -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:groups": "curl -s -X POST http://localhost:3000/api/sync/groups -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:sponsors": "curl -s -X POST http://localhost:3000/api/sync/sponsors -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
+    "sync:events": "curl -s -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0",

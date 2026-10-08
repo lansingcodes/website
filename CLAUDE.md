@@ -48,8 +48,8 @@ Copy `.env.local.example` to `.env.local` and fill in:
 | `app/globals.css` | Tailwind v4 theme + global CSS + custom utility classes |
 | `lib/firebase/admin.ts` | Firebase Admin singleton (server only) |
 | `lib/firestore/events.ts` | `getUpcomingEvents()` — next 4 weeks from Firestore |
-| `lib/firestore/groups.ts` | `getAllGroups()` |
-| `lib/firestore/sponsors.ts` | `getAllSponsors()` |
+| `lib/data/groups.ts` | `getAllGroups()` — reads from `data/groups.json` |
+| `lib/data/sponsors.ts` | `getAllSponsors()` — reads from `data/sponsors.json` |
 | `lib/meetup/` | Meetup iCal scraping (axios + ical2json + moment-timezone) |
 | `lib/api/auth.ts` | `checkSyncSecret()` — validates Bearer token on sync routes |
 | `data/groups.json` | 11 tech group definitions (source of truth for group metadata) |
@@ -67,9 +67,7 @@ All require `Authorization: Bearer $SYNC_SECRET` header.
 | Route | Action |
 |-------|--------|
 | `POST /api/sync/events` | Scrape Meetup iCal feeds → write to Firestore `events` collection |
-| `POST /api/sync/groups` | Write `data/groups.json` → Firestore `groups` collection |
-| `POST /api/sync/sponsors` | Write `data/sponsors.json` → Firestore `sponsors` collection |
-| `POST /api/sync/all` | Run all three above in parallel |
+| `POST /api/sync/all` | Run event sync |
 
 ## Source Repos (Reference Only)
 

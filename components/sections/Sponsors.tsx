@@ -1,6 +1,6 @@
 import SectionHeading from '@/components/SectionHeading'
 import CardFigure from '@/components/cards/CardFigure'
-import type { Sponsor } from '@/lib/firestore/sponsors'
+import type { Sponsor } from '@/lib/types'
 
 interface SponsorsProps {
   sponsors: Sponsor[]

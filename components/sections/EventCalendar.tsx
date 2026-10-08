@@ -12,8 +12,7 @@ import chunk from 'lodash/chunk'
 import { simplifiedName } from '@/lib/utils/simplifiedName'
 import CalendarEvent, { type EventEntry } from './CalendarEvent'
 import maxCalendarWeeks from '@/config/max-calendar-weeks'
-import type { Event } from '@/lib/firestore/events'
-import type { Group } from '@/lib/firestore/groups'
+import type { Event, Group } from '@/lib/types'
 
 interface EventCalendarProps {
   now: number
