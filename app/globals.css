@@ -164,6 +164,19 @@ p {
   background-size: cover;
 }
 
+/* Keep event card titles readable above the global link rules. */
+.lc-event-title,
+.lc-event-title:hover,
+.lc-event-title:focus {
+  color: white;
+  background-color: transparent;
+}
+
+.lc-event-title:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
 /* Event description links */
 .lc-event-description a {
   color: white;
