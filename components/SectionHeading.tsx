@@ -2,7 +2,6 @@ interface SectionHeadingProps {
   id?: string
   heading: string
   subheading?: string
-  subpage?: string
   h1?: boolean
   white?: boolean
   blue?: boolean
@@ -13,7 +12,6 @@ export default function SectionHeading({
   id,
   heading,
   subheading,
-  subpage,
   h1 = false,
   white = false,
   blue = false,
@@ -41,13 +39,6 @@ export default function SectionHeading({
         <p className={`mt-0 ${white ? 'text-white' : ''}`}>{subheading}</p>
       )}
       <hr className={`border-4 my-6 w-16 mx-auto ${hrColor}`} />
-      {subpage && (
-        <h2 className={`text-2xl ${headingColor}`}>
-          <a href="/sponsors-signup" className="no-underline">
-            {subpage}
-          </a>
-        </h2>
-      )}
     </header>
   )
 }
