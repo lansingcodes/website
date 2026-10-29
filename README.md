@@ -90,7 +90,9 @@ Each developer sets up their own Firebase project for local development.
 
 1. In the left sidebar, click **Firestore Database** (under Databases).
 2. Click **Create database**.
-3. Choose **Start in test mode** for local development, then click **Next**.
+3. Choose **Start in production mode**, then click **Next**. The server-side
+   Firebase Admin SDK can still access Firestore with its service account;
+   test mode would allow public clients to read and overwrite data.
 4. Pick any region and click **Enable**.
 
 **3. Get service account credentials**
