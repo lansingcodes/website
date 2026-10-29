@@ -8,12 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test",
+    "test": "tsx --test test/*.test.mjs test/*.test.ts",
+    "test:stack": "bash scripts/run-sync-safety-smoke.sh",
     "sync": "npm run sync:all",
-    "sync:all": "curl -s -X POST http://localhost:3000/api/sync/all -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:events": "curl -s -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:groups": "curl -s -X POST http://localhost:3000/api/sync/groups -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:sponsors": "curl -s -X POST http://localhost:3000/api/sync/sponsors -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
+    "sync:all": "curl --fail-with-body -sS -X POST http://localhost:3000/api/sync/all -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
+    "sync:events": "curl --fail-with-body -sS -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
+    "sync:groups": "curl --fail-with-body -sS -X POST http://localhost:3000/api/sync/groups -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
+    "sync:sponsors": "curl --fail-with-body -sS -X POST http://localhost:3000/api/sync/sponsors -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
@@ -44,6 +45,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

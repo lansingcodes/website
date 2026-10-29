@@ -5,12 +5,9 @@ export default async function handler() {
   const baseUrl = process.env.URL || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   const syncSecret = process.env.SYNC_SECRET
 
-  if (!syncSecret) {
-    console.error('SYNC_SECRET not set — skipping scheduled sync')
-    return
-  }
-
   try {
+    if (!syncSecret) throw new Error('SYNC_SECRET not set')
+
     const response = await fetch(`${baseUrl}/api/sync/all`, {
       method: 'POST',
       headers: {
@@ -19,13 +16,13 @@ export default async function handler() {
     })
 
     if (!response.ok) {
-      const body = await response.text()
-      console.error(`Scheduled sync failed (Node ${process.version}):`, response.status, body)
+      throw new Error(`Sync endpoint returned HTTP ${response.status}`)
     } else {
       console.log(`Scheduled sync succeeded (Node ${process.version})`)
     }
   } catch (error) {
-    console.error('Scheduled sync error:', error)
+    console.error('Scheduled sync failed:', error)
+    throw error
   }
 }
 
