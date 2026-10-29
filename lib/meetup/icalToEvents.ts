@@ -1,4 +1,4 @@
-import ical2json from 'ical2json'
+import { convert } from 'ical2json'
 import { parseName } from './helpers/parseName'
 import { parseDescription } from './helpers/parseDescription'
 import { parseVenue } from './helpers/parseVenue'
@@ -7,8 +7,10 @@ import { parseStartTime } from './helpers/parseStartTime'
 import type { Event } from '@/lib/firestore/events'
 
 export function icalToEvents(groupKey: string, ical: string): Record<string, Omit<Event, 'id'> & { id: string }> {
-  const icalJson = ical2json.convert(ical)
-  if (!icalJson.VCALENDAR) return {}
+  const icalJson = convert(ical)
+  if (!icalJson.VCALENDAR) {
+    throw new Error('Meetup returned a calendar without VCALENDAR')
+  }
 
   const events: Record<string, Omit<Event, 'id'> & { id: string }> = {}
   ;(icalJson.VCALENDAR as Record<string, unknown>[]).forEach((calendar: Record<string, unknown>) => {

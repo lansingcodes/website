@@ -29,6 +29,10 @@ export function getFirebaseAdmin(): App {
 
   const { projectId, clientEmail, privateKey } = getCredentials()
 
+  if (process.env.FIRESTORE_EMULATOR_HOST && projectId) {
+    return initializeApp({ projectId }, APP_NAME)
+  }
+
   if (!projectId || !clientEmail || !privateKey) {
     throw new Error(
       'Missing Firebase credentials. Set FIREBASE_SERVICE_ACCOUNT, or FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY in .env.local',

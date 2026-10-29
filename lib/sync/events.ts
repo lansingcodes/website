@@ -4,12 +4,11 @@ import { fetchEventsForAllGroups } from '@/lib/meetup/fetchEventsForAllGroups'
 // Full-replace sync: fetch all current Meetup events, write them to
 // Firestore, then delete any docs that weren't in the new set. Writing
 // before deleting avoids a window where events are missing from the site.
-export async function syncEvents() {
+export async function syncEvents(loadEvents: typeof fetchEventsForAllGroups = fetchEventsForAllGroups) {
+  // Fetch every feed before opening Firestore or replacing any documents.
+  const events = await loadEvents()
   const db = getFirestore()
   const eventsRef = db.collection('events')
-
-  // Fetch new events first, before any deletions
-  const events = await fetchEventsForAllGroups()
   const newEventIds = new Set(Object.keys(events))
 
   // Write new events

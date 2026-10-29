@@ -158,9 +158,19 @@ npm run sync:sponsors  # just sponsors
 
 These scripts automatically read `SYNC_SECRET` from your `.env.local` file.
 
+Run `npm test` and `npm run test:stack` before changing the sync code. The stack
+test needs the Firebase CLI on `PATH` or via `FIREBASE_BIN`; it uses a local
+demo Firestore emulator and never writes to staging or production. Event sync
+fetches every Meetup calendar before modifying Firestore. If a feed is
+unavailable or malformed, the sync fails and leaves the existing event
+collection in place. The scheduled function reports missing credentials and
+rejected sync requests as failures; check its Netlify function logs after a
+deployment or a manual **Run now**.
+See [sync rollout and recovery](docs/sync-rollout.md) before a production sync.
+
 ## Other scripts
 
-Build for production (also runs TypeScript type checking):
+Build for production (also runs lint, tests, and TypeScript type checking):
 
 ```sh
 npm run build
@@ -175,8 +185,11 @@ npm run lint
 ## Deployments
 
 After a pull request is reviewed and merged to `main`, Netlify automatically
-builds and publishes the site. The Netlify scheduled function runs every 2 hours
-to sync the latest Meetup events into Firestore.
+builds and publishes the staging site. Production is deployed from `main` by
+the manually triggered [Deploy to production](.github/workflows/deploy-production.yml)
+GitHub Actions workflow after its environment approval. The Netlify scheduled
+function runs every 2 hours on each published site to sync Meetup events,
+groups, and sponsors into that site's Firestore project.
 
 For both staging and production, Netlify runs `npm run build` and deploys the
 resulting `.next` directory via `@netlify/plugin-nextjs`.
