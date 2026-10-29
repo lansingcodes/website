@@ -16,7 +16,6 @@ export default function Sponsors({ sponsors }: SponsorsProps) {
         blue
         heading="Our Sponsors"
         subheading="the companies that make all this possible!"
-        subpage="Become a Sponsor"
         className="md:mb-16 self-end w-full md:w-1/3"
       />
       <div className="hidden md:block md:mb-16 md:w-2/3">

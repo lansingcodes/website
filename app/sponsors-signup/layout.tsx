@@ -1,5 +1,7 @@
+import { sponsorSignupEnabled } from './config'
+
 export const metadata = {
-  title: 'Become a Sponsor — Lansing Codes',
+  title: sponsorSignupEnabled ? 'Become a Sponsor — Lansing Codes' : 'Page unavailable — Lansing Codes',
 }
 
 export default function SponsorsSignupLayout({
