@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { deleteApp } from 'firebase-admin/app'
 import { getFirebaseAdmin, getFirestore } from '../lib/firebase/admin'
-import { syncEvents } from '../lib/sync/events'
+import { EventSyncInProgressError, syncEvents } from '../lib/sync/events'
 
 if (!['127.0.0.1:8085', 'localhost:8085'].includes(process.env.FIRESTORE_EMULATOR_HOST || '') ||
     process.env.FIREBASE_PROJECT_ID !== 'demo-lansingcodes') {
@@ -29,8 +29,39 @@ async function main () {
     assert.equal((await existing.get()).exists, false)
     assert.equal((await replacement.get()).exists, true)
     console.log('PASS: complete feed replaces stale events')
+
+    let signalFirstStarted!: () => void
+    let resumeFirst!: () => void
+    const firstStarted = new Promise<void>((resolve) => { signalFirstStarted = resolve })
+    const firstPaused = new Promise<void>((resolve) => { resumeFirst = resolve })
+    const firstRun = syncEvents(async () => {
+      signalFirstStarted()
+      await firstPaused
+      return { 'older-event': { group: 'devops', name: 'Older event', startTime: Date.now() } }
+    })
+    await firstStarted
+
+    let overlappingFeedLoaded = false
+    await assert.rejects(syncEvents(async () => {
+      overlappingFeedLoaded = true
+      return {}
+    }), EventSyncInProgressError)
+    assert.equal(overlappingFeedLoaded, false)
+    console.log('PASS: a second sync cannot start while the lease is active')
+
+    // Simulate a crashed or stalled first process whose lease has expired.
+    await db.collection('_sync_locks').doc('events').update({ expiresAt: 0 })
+    await syncEvents(async () => ({
+      'newer-event': { group: 'devops', name: 'Newer event', startTime: Date.now() },
+    }))
+    resumeFirst()
+    await assert.rejects(firstRun, /lease was lost/)
+    assert.equal((await eventsRef.doc('newer-event').get()).exists, true)
+    assert.equal((await eventsRef.doc('older-event').get()).exists, false)
+    console.log('PASS: an expired older run cannot replace a newer successful sync')
   } finally {
     await db.recursiveDelete(eventsRef)
+    await db.recursiveDelete(db.collection('_sync_locks'))
     await db.terminate()
     await deleteApp(getFirebaseAdmin())
   }
