@@ -10,7 +10,18 @@ const SUCCESS_MESSAGE =
   "Almost finished! If you aren't already subscribed, check your email to confirm your subscription."
 
 export async function POST(request: NextRequest) {
-  const { email } = await request.json()
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+  }
+
+  if (body === null || typeof body !== 'object' || Array.isArray(body)) {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+  }
+
+  const { email } = body as { email?: unknown }
 
   if (!email || typeof email !== 'string') {
     return NextResponse.json(
