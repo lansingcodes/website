@@ -31,7 +31,7 @@ export default function CardEvent({ event, group }: CardEventProps) {
               href={event.url}
               rel="noreferrer noopener"
               target="_blank"
-              className="text-white no-underline hover:text-white hover:underline focus:text-white focus:underline focus:bg-transparent"
+              className="lc-event-title no-underline hover:underline focus:underline"
             >
               {event.name}
             </a>
