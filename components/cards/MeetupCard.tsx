@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 import LogoMedium from '@/components/logos/LogoMedium'
-import type { Group } from '@/lib/firestore/groups'
+import type { Group } from '@/lib/types'
 
 interface MeetupCardProps {
   group: Group

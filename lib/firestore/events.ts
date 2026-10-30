@@ -1,18 +1,10 @@
 import { getFirestore } from '@/lib/firebase/admin'
 import { startOfDay, addWeeks, endOfDay, endOfWeek } from 'date-fns'
 import maxCalendarWeeks from '@/config/max-calendar-weeks'
+import type { Event } from '@/lib/types'
 import { inLansing } from '@/config/time-zone'
 
-export interface Event {
-  id: string
-  group: string
-  name: string
-  description: string
-  url: string
-  startTime: number
-  venue: string
-  address: string
-}
+export type { Event }
 
 export async function getUpcomingEvents(): Promise<Event[]> {
   const db = getFirestore()

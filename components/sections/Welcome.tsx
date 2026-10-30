@@ -9,8 +9,7 @@ import { cleanEventDescription } from '@/lib/utils/cleanEventDescription'
 import { boldMarkdownToHtml } from '@/lib/utils/boldMarkdownToHtml'
 import { groupForEvent } from '@/lib/utils/groupForEvent'
 import urls from '@/config/urls.json'
-import type { Event } from '@/lib/firestore/events'
-import type { Group } from '@/lib/firestore/groups'
+import type { Event, Group } from '@/lib/types'
 
 interface WelcomeProps {
   now: number

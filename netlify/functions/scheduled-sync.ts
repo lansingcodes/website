@@ -1,6 +1,6 @@
 import type { Config } from '@netlify/functions'
 
-// Runs every 2 hours to sync Meetup events, groups, and sponsors to Firestore
+// Runs every 2 hours to sync Meetup events to Firestore
 export default async function handler() {
   const baseUrl = process.env.URL || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   const syncSecret = process.env.SYNC_SECRET

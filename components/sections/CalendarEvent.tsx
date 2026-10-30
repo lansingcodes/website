@@ -2,8 +2,7 @@ import LogoExtraSmall from '@/components/logos/LogoExtraSmall'
 import { formatTimeOfEvent } from '@/lib/utils/formatDateTime'
 import { groupForEvent } from '@/lib/utils/groupForEvent'
 import { orderBy } from 'lodash'
-import type { Event } from '@/lib/firestore/events'
-import type { Group } from '@/lib/firestore/groups'
+import type { Event, Group } from '@/lib/types'
 
 export type EventEntry = {
   type: 'single' | 'community' | 'group'

@@ -137,24 +137,15 @@ site. The page will reload automatically as you edit files.
 
 ### Syncing data
 
-The site reads event, group, and sponsor data from Firebase Firestore. Your
-Firestore database starts empty, so you need to populate it. With the dev
-server running, open a second terminal and run:
+Groups and sponsors are read directly from `data/groups.json` and `data/sponsors.json`.
+Events are synced from Meetup iCal feeds into Firebase Firestore. To populate
+events for local development, run:
 
 ```sh
 npm run sync
 ```
 
-This scrapes Meetup iCal feeds and writes events, groups, and sponsors to your
-Firestore database. Refresh the browser and you should see the full site.
-
-You can also sync individual collections:
-
-```sh
-npm run sync:events    # just events
-npm run sync:groups    # just groups
-npm run sync:sponsors  # just sponsors
-```
+(or `npm run sync:events`). Refresh the browser and you should see the full site.
 
 These scripts automatically read `SYNC_SECRET` from your `.env.local` file.
 

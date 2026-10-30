@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkSyncSecret } from '@/lib/api/auth'
 import { syncEvents } from '@/lib/sync/events'
-import { syncGroups } from '@/lib/sync/groups'
-import { syncSponsors } from '@/lib/sync/sponsors'
 
 export async function POST(request: NextRequest) {
   if (!checkSyncSecret(request)) {
@@ -10,7 +8,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await Promise.all([syncEvents(), syncGroups(), syncSponsors()])
+    await syncEvents()
     return NextResponse.json({ message: 'successfully loaded all data' })
   } catch (error) {
     console.error('Failed to sync all:', error)

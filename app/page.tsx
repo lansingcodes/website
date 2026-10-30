@@ -1,6 +1,6 @@
 import { getUpcomingEvents } from '@/lib/firestore/events'
-import { getAllGroups } from '@/lib/firestore/groups'
-import { getAllSponsors } from '@/lib/firestore/sponsors'
+import { getAllGroups } from '@/lib/data/groups'
+import { getAllSponsors } from '@/lib/data/sponsors'
 import Welcome from '@/components/sections/Welcome'
 import Events from '@/components/sections/Events'
 import Meetups from '@/components/sections/Meetups'
