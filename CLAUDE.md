@@ -26,6 +26,9 @@ agent-browser install  # Download Chromium
 - **Data**: Firebase Firestore, read server-side only via Firebase Admin SDK — no client-side Firebase
 - **Rendering**: SSR on every request (`export const dynamic = 'force-dynamic'` on home page)
 - **Deployment**: Netlify via `@netlify/plugin-nextjs`
+  - Merges to `main` deploy to staging (Netlify project `lansingcodes-staging`, Firebase `lansing-codes-staging`); PRs get deploy previews there
+  - Production (`lansingcodes-www`, www.lansing.codes, Firebase `lansing-codes`) is not linked to the repo. The **Deploy to production** GitHub Action (`.github/workflows/deploy-production.yml`) builds `main` with the Netlify CLI and publishes it there on demand. It's gated by the `production` GitHub Environment's required reviewers, which also holds `NETLIFY_AUTH_TOKEN` and `NETLIFY_PRODUCTION_SITE_ID`
+  - Roll back by publishing an older deploy in Netlify
 
 ## Environment Variables
 
@@ -33,6 +36,7 @@ Copy `.env.local.example` to `.env.local` and fill in:
 
 | Variable | Description |
 |----------|-------------|
+| `FIREBASE_SERVICE_ACCOUNT` | Optional: full service account JSON. If set, used instead of the three vars below (`FIREBASE_PROJECT_ID` still overrides its `project_id`) |
 | `FIREBASE_PROJECT_ID` | Firebase project ID (e.g. `lansing-codes`) |
 | `FIREBASE_CLIENT_EMAIL` | Service account email from Firebase Console → Service accounts |
 | `FIREBASE_PRIVATE_KEY` | Private key from the service account JSON (include the `-----BEGIN/END-----` lines, use `\n` for newlines) |

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import SectionHeading from '@/components/SectionHeading'
+import { isValidEmail } from '@/lib/utils/isValidEmail'
 
 export default function Newsletter() {
   const [email, setEmail] = useState('')
@@ -18,7 +19,7 @@ export default function Newsletter() {
       return
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!isValidEmail(email)) {
       setMessage('Please enter a valid email address.')
       return
     }

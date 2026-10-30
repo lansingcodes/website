@@ -1,7 +1,13 @@
 import { createHash } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { isValidEmail } from '@/lib/utils/isValidEmail'
 
 const MAILCHIMP_LIST_ID = 'f13ffe3703'
+
+// Same reply whether or not the address is already on the list, so the
+// endpoint can't be used to look up who subscribes
+const SUCCESS_MESSAGE =
+  "Almost finished! If you aren't already subscribed, check your email to confirm your subscription."
 
 export async function POST(request: NextRequest) {
   const { email } = await request.json()
@@ -13,7 +19,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!isValidEmail(email)) {
     return NextResponse.json(
       { error: 'Please enter a valid email address.' },
       { status: 400 },
@@ -53,25 +59,15 @@ export async function POST(request: NextRequest) {
     const data = await response.json()
 
     if (!response.ok) {
-      const detail = data.detail || 'Something went wrong.'
-      return NextResponse.json({ error: detail }, { status: response.status })
+      // Mailchimp's detail can reveal a member's status, so keep it server-side
+      console.error('Mailchimp subscribe failed:', response.status, data.title, data.detail)
+      return NextResponse.json(
+        { error: "We couldn't subscribe that address. Please check it and try again." },
+        { status: response.status >= 500 ? 502 : 400 },
+      )
     }
 
-    if (data.status === 'pending') {
-      return NextResponse.json({
-        message: 'Almost finished! Check your email to confirm your subscription.',
-      })
-    }
-
-    if (data.status === 'subscribed') {
-      return NextResponse.json({
-        message: "You're already subscribed!",
-      })
-    }
-
-    return NextResponse.json({
-      message: 'Almost finished! Check your email to confirm your subscription.',
-    })
+    return NextResponse.json({ message: SUCCESS_MESSAGE })
   } catch {
     return NextResponse.json(
       { error: 'Newsletter subscription is temporarily unavailable. Please try again later.' },

@@ -20,9 +20,9 @@ export default async function handler() {
 
     if (!response.ok) {
       const body = await response.text()
-      console.error('Scheduled sync failed:', response.status, body)
+      console.error(`Scheduled sync failed (Node ${process.version}):`, response.status, body)
     } else {
-      console.log('Scheduled sync succeeded')
+      console.log(`Scheduled sync succeeded (Node ${process.version})`)
     }
   } catch (error) {
     console.error('Scheduled sync error:', error)

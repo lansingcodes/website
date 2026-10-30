@@ -43,3 +43,5 @@ next-env.d.ts
 
 # dogfood testing
 /dogfood-output
+# netlify
+.netlify

@@ -1,0 +1,62 @@
+# Deploys main to production on demand.
+#
+# Merging to main deploys to staging (Netlify: lansingcodes-staging, linked to
+# this repo). Production (Netlify: lansingcodes-www, www.lansing.codes) is not
+# linked to a repo; running this workflow builds main with the Netlify CLI,
+# using lansingcodes-www's environment variables, and publishes it there.
+#
+# Who can deploy is controlled by the `production` GitHub Environment:
+# Settings → Environments → production → Required reviewers, with
+# Deployment branches limited to `main`. The environment holds the secrets
+# NETLIFY_AUTH_TOKEN and NETLIFY_PRODUCTION_SITE_ID.
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy main to production
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://www.lansing.codes
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+        run: |
+          # deploy runs the build (netlify.toml) before uploading
+          npx --yes netlify-cli@27.11.2 deploy \
+            --prod \
+            --context production \
+            --message "Deploy ${GITHUB_SHA::7} from main (run ${GITHUB_RUN_ID})"
+
+      - name: Summarize
+        run: |
+          {
+            echo "### Deployed to production"
+            echo
+            echo "Commit: \`${GITHUB_SHA}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

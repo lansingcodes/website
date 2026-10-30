@@ -13,6 +13,7 @@ import { simplifiedName } from '@/lib/utils/simplifiedName'
 import CalendarEvent, { type EventEntry } from './CalendarEvent'
 import maxCalendarWeeks from '@/config/max-calendar-weeks'
 import type { Event, Group } from '@/lib/types'
+import { inLansing } from '@/config/time-zone'
 
 interface EventCalendarProps {
   now: number
@@ -23,12 +24,15 @@ interface EventCalendarProps {
 const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 function buildCalendar(events: Event[], now: number): Date[][] {
-  const startDate = startOfWeek(now)
-  const defaultEnd = endOfWeek(addWeeks(startDate, maxCalendarWeeks - 1))
+  const startDate = startOfWeek(now, { in: inLansing })
+  const defaultEnd = endOfWeek(
+    addWeeks(startDate, maxCalendarWeeks - 1, { in: inLansing }),
+    { in: inLansing },
+  )
   const lastEvent = events[events.length - 1]
   let endDate = defaultEnd
   if (lastEvent) {
-    const lastEventEnd = endOfWeek(new Date(lastEvent.startTime))
+    const lastEventEnd = endOfWeek(lastEvent.startTime, { in: inLansing })
     endDate = isAfter(lastEventEnd, defaultEnd) ? lastEventEnd : defaultEnd
   }
 
@@ -36,7 +40,7 @@ function buildCalendar(events: Event[], now: number): Date[][] {
   for (
     let days = 0, current = startDate;
     isBefore(current, endDate);
-    days++, current = addDays(startDate, days)
+    days++, current = addDays(startDate, days, { in: inLansing })
   ) {
     dates.push(current)
   }
@@ -45,7 +49,7 @@ function buildCalendar(events: Event[], now: number): Date[][] {
 
 function eventsOnDay(day: Date, events: Event[]): EventEntry[] {
   return events
-    .filter((event) => isSameDay(new Date(event.startTime), day))
+    .filter((event) => isSameDay(event.startTime, day, { in: inLansing }))
     // Group events into three display types:
     //  - "community": multiple groups hosting the same event at the same time
     //    (matched by normalized name + identical startTime)
@@ -83,22 +87,22 @@ function eventsOnDay(day: Date, events: Event[]): EventEntry[] {
 }
 
 export default function EventCalendar({ events, groups, now }: EventCalendarProps) {
-  const startDate = startOfWeek(now)
+  const startDate = startOfWeek(now, { in: inLansing })
   const calendar = buildCalendar(events, now)
 
   const formatDayLabel = (day: Date): string => {
-    const dayOfMonth = formatDate(day, 'd')
-    const isStartDate = isSameDay(day, startDate)
+    const dayOfMonth = formatDate(day, 'd', { in: inLansing })
+    const isStartDate = isSameDay(day, startDate, { in: inLansing })
     return dayOfMonth === '1' || isStartDate
-      ? formatDate(day, 'MMM d')
+      ? formatDate(day, 'MMM d', { in: inLansing })
       : dayOfMonth
   }
 
   const isDuringActivePeriod = (day: Date): boolean =>
-    isAfter(day, now) || isSameDay(day, now)
+    isAfter(day, now) || isSameDay(day, now, { in: inLansing })
 
-  const isToday = (day: Date): boolean => isSameDay(day, now)
-  const isWeekday = (day: Date): boolean => +formatDate(day, 'i') <= 5
+  const isToday = (day: Date): boolean => isSameDay(day, now, { in: inLansing })
+  const isWeekday = (day: Date): boolean => +formatDate(day, 'i', { in: inLansing }) <= 5
 
   return (
     <div>

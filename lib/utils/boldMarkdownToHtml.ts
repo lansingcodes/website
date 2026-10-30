@@ -11,8 +11,8 @@ export function boldMarkdownToHtml(markdown: string): string {
   // Escape HTML first to prevent XSS from external data
   const escaped = escapeHtml(markdown)
   // Convert **text** to bold spans using a single regex
-  return escaped.replace(
-    /\*\*(.*?)\*\*/g,
-    '<span class="font-bold">$1</span>',
-  )
+  return escaped
+    .replace(/\*\*(.*?)\*\*/g, '<span class="font-bold">$1</span>')
+    // Drop any unpaired ** left behind when the description was truncated
+    .replace(/\*\*/g, '')
 }
