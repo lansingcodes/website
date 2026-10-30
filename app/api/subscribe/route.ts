@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { isValidEmail } from '@/lib/utils/isValidEmail'
 
-const MAILCHIMP_LIST_ID = 'f13ffe3703'
+const DEFAULT_MAILCHIMP_LIST_ID = 'f13ffe3703'
 
 // Same reply whether or not the address is already on the list, so the
 // endpoint can't be used to look up who subscribes
@@ -47,12 +47,13 @@ export async function POST(request: NextRequest) {
 
   // Extract data center from API key (e.g., "....-us19" → "us19")
   const dc = apiKey.split('-').pop()
+  const listId = process.env.MAILCHIMP_LIST_ID || DEFAULT_MAILCHIMP_LIST_ID
   const subscriberHash = createHash('md5')
     .update(email.toLowerCase())
     .digest('hex')
 
   // Use PUT for add-or-update (idempotent — no error if already subscribed)
-  const url = `https://${dc}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${subscriberHash}`
+  const url = `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members/${subscriberHash}`
 
   try {
     const response = await fetch(url, {
