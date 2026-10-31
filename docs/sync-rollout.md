@@ -5,6 +5,21 @@ collections. The sync replaces each collection from Meetup feeds or the
 repository JSON files. Use this checklist for a staging rehearsal and before
 the first production sync after a code change.
 
+## Combined sync failure results
+
+`POST /api/sync/all` waits for all three collection writers to finish. On a
+failure it returns HTTP 500 with an `outcomes` object for `events`, `groups`,
+and `sponsors`. `complete` means that writer returned successfully;
+`failed_or_partial` means it threw and may already have changed some documents.
+The route also logs the collection-specific errors and all outcomes. The
+scheduled Netlify function treats the HTTP 500 as a failed invocation.
+
+The three collection writes are not an atomic transaction. If one fails, check
+the reported outcomes and inspect all three collections before retrying. A
+successful retry can reconcile each collection from its source, but an
+interrupted writer may require manual review. Do not interpret HTTP 500 as
+proof that no Firestore documents changed.
+
 ## Admin instructions for this change
 
 1. Review and merge [website PR #18](https://github.com/lansingcodes/website/pull/18)
