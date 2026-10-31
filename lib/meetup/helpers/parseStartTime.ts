@@ -10,7 +10,7 @@ export function parseStartTime(vevent: Record<string, string>): number | undefin
   const timezoneIndex = dtstartKey.indexOf(tzDelim)
   const timezoneName =
     timezoneIndex >= 0
-      ? dtstartKey.slice(timezoneIndex + tzDelim.length)
+      ? dtstartKey.slice(timezoneIndex + tzDelim.length).split(';', 1)[0]
       : undefined
   const dtstart = vevent[dtstartKey]
   if (dtstart.length < 15) return undefined
