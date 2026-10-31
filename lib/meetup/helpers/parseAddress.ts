@@ -4,7 +4,7 @@ export function parseAddress(location: string): string {
   if (!location) return ''
   const from = location.lastIndexOf('(')
   const to = location.lastIndexOf(')')
-  if (from === -1 && to === -1) return ''
+  if (from === -1 || to <= from) return ''
   const address = location.substring(from + 1, to)
   return address.replace(/\\/g, '')
 }
