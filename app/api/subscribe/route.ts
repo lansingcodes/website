@@ -68,14 +68,25 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      // Mailchimp's detail can reveal a member's status, so keep it server-side
-      console.error('Mailchimp subscribe failed:', response.status, data.title, data.detail)
+      // Mailchimp can return 429/403 without JSON. Avoid parsing or logging
+      // the response body, which may also contain subscriber information.
+      console.error('Mailchimp subscribe failed:', response.status)
+      if (response.status === 429) {
+        return NextResponse.json(
+          { error: 'Newsletter subscription is temporarily unavailable. Please try again later.' },
+          { status: 503 },
+        )
+      }
+      if (response.status === 401 || response.status === 403 || response.status >= 500) {
+        return NextResponse.json(
+          { error: 'Newsletter subscription is temporarily unavailable. Please try again later.' },
+          { status: 502 },
+        )
+      }
       return NextResponse.json(
         { error: "We couldn't subscribe that address. Please check it and try again." },
-        { status: response.status >= 500 ? 502 : 400 },
+        { status: 400 },
       )
     }
 
