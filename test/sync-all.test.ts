@@ -34,3 +34,12 @@ test('combined sync reports success when every writer completes', async () => {
   })
   assert.deepEqual(result.failures, [])
 })
+
+test('combined sync reports only event outcomes when events are the only writer', async () => {
+  const result = await runAllSyncs({
+    events: async () => { throw new Error('Meetup unavailable') },
+  })
+  assert.deepEqual(result.outcomes, { events: 'failed_or_partial' })
+  assert.equal(result.failures.length, 1)
+  assert.equal(result.failures[0].collection, 'events')
+})
