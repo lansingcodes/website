@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { isValidEmail } from '@/lib/utils/isValidEmail'
 
-const MAILCHIMP_LIST_ID = 'f13ffe3703'
+const DEFAULT_MAILCHIMP_LIST_ID = 'f13ffe3703'
 
 // Same reply whether or not the address is already on the list, so the
 // endpoint can't be used to look up who subscribes
@@ -10,7 +10,18 @@ const SUCCESS_MESSAGE =
   "Almost finished! If you aren't already subscribed, check your email to confirm your subscription."
 
 export async function POST(request: NextRequest) {
-  const { email } = await request.json()
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+  }
+
+  if (body === null || typeof body !== 'object' || Array.isArray(body)) {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+  }
+
+  const { email } = body as { email?: unknown }
 
   if (!email || typeof email !== 'string') {
     return NextResponse.json(
@@ -36,12 +47,13 @@ export async function POST(request: NextRequest) {
 
   // Extract data center from API key (e.g., "....-us19" → "us19")
   const dc = apiKey.split('-').pop()
+  const listId = process.env.MAILCHIMP_LIST_ID || DEFAULT_MAILCHIMP_LIST_ID
   const subscriberHash = createHash('md5')
     .update(email.toLowerCase())
     .digest('hex')
 
   // Use PUT for add-or-update (idempotent — no error if already subscribed)
-  const url = `https://${dc}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${subscriberHash}`
+  const url = `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members/${subscriberHash}`
 
   try {
     const response = await fetch(url, {
@@ -56,14 +68,25 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      // Mailchimp's detail can reveal a member's status, so keep it server-side
-      console.error('Mailchimp subscribe failed:', response.status, data.title, data.detail)
+      // Mailchimp can return 429/403 without JSON. Avoid parsing or logging
+      // the response body, which may also contain subscriber information.
+      console.error('Mailchimp subscribe failed:', response.status)
+      if (response.status === 429) {
+        return NextResponse.json(
+          { error: 'Newsletter subscription is temporarily unavailable. Please try again later.' },
+          { status: 503 },
+        )
+      }
+      if (response.status === 401 || response.status === 403 || response.status >= 500) {
+        return NextResponse.json(
+          { error: 'Newsletter subscription is temporarily unavailable. Please try again later.' },
+          { status: 502 },
+        )
+      }
       return NextResponse.json(
         { error: "We couldn't subscribe that address. Please check it and try again." },
-        { status: response.status >= 500 ? 502 : 400 },
+        { status: 400 },
       )
     }
 

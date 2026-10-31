@@ -118,6 +118,12 @@ newlines.
 
 #### Other variables
 
+For newsletter subscription testing, set `MAILCHIMP_API_KEY` to a key from
+your own Mailchimp account and `MAILCHIMP_LIST_ID` to that account's audience
+ID. If `MAILCHIMP_LIST_ID` is unset, the subscribe route uses the existing
+Lansing Codes audience ID. Keep test credentials in local or deployment
+environment variables; do not commit them.
+
 | Variable | Description |
 |----------|-------------|
 | `SYNC_SECRET` | A random string used to protect the `/api/sync/*` routes. Generate one with `openssl rand -base64 32`. |
