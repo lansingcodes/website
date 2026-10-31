@@ -79,6 +79,10 @@ Then fill in the values as described below.
 This app uses the Firebase Admin SDK to read and write Firestore data server-side.
 Each developer sets up their own Firebase project for local development.
 
+> **Don't want to set up Firebase?** You can develop locally against JSON files
+> or the Firestore emulator instead. See
+> [Alternative Storage Options for Local Development](#alternative-storage-options-for-local-development)
+
 **1. Create a Firebase project**
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/) and sign
@@ -199,6 +203,74 @@ This project requires Node.js 20 or later. Check your version with
 **Site looks empty after starting dev server**
 You need to sync data first. Run `npm run sync` in a second terminal while the
 dev server is running (see [Syncing data](#syncing-data) above).
+
+## Alternative Storage Options for Local Development
+
+By default the app reads and writes your own Firebase project's Firestore
+database. For local development you can skip Firebase setup by setting
+`DATA_STORE` in `.env.local` to one of the options below. With either option the
+`FIREBASE_*` variables are not needed, but `SYNC_SECRET` is still required to
+populate data.
+
+`DATA_STORE` is for development only. If it's set in production, the app throws
+an error when it reads data. Restart the dev server after changing it, and remove it (or comment
+it out) to go back to Firestore.
+
+### Local JSON files (`DATA_STORE=local`)
+
+The simplest option, with no extra software. Data is stored as JSON files in
+`.data/` (ignored by git).
+
+1. Add this line to `.env.local`:
+
+   ```sh
+   DATA_STORE=local
+   ```
+
+2. Start the dev server with `npm run dev`.
+3. In a second terminal, run `npm run sync` to populate events, groups, and
+   sponsors.
+
+To start fresh, stop the dev server, delete the `.data/` folder, and sync again.
+
+### Firestore emulator (`DATA_STORE=emulator`)
+
+Runs the real Firestore code path against a local copy of Firestore, so it
+behaves like production without needing a Firebase account. It requires:
+
+- The Firebase CLI: `npm install -g firebase-tools`
+- Java 21 or later
+
+1. Check prerequisites and download the emulator (one time):
+
+   ```sh
+   npm run emulator:setup
+   ```
+
+   If something is missing, the script tells you what to install for your
+   operating system.
+
+2. Add this line to `.env.local`:
+
+   ```sh
+   DATA_STORE=emulator
+   ```
+
+3. Start the emulator and leave it running:
+
+   ```sh
+   npm run emulator
+   ```
+
+   The Emulator UI, where you can browse the data, is at
+   [http://127.0.0.1:4000](http://127.0.0.1:4000).
+
+4. In a second terminal, start the dev server with `npm run dev`.
+5. In a third terminal, run `npm run sync` to populate data.
+
+Stop the emulator with Ctrl+C. Its data is saved to `.emulator-data/` (ignored
+by git) on exit and loaded again the next time you run `npm run emulator`.
+Delete that folder to start fresh.
 
 ## Contribution
 

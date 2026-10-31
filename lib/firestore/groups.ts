@@ -1,4 +1,4 @@
-import { getFirestore } from '@/lib/firebase/admin'
+import { getStore } from '@/lib/store'
 
 export interface Group {
   id: string
@@ -14,12 +14,7 @@ export interface Group {
 }
 
 export async function getAllGroups(): Promise<Group[]> {
-  const db = getFirestore()
-  const snapshot = await db.collection('groups').get()
-  const groups = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as Omit<Group, 'id'>),
-  }))
+  const groups = await getStore().listDocs<Omit<Group, 'id'>>('groups')
   return groups.sort((a, b) =>
     a.name.toLowerCase().replace(/[^a-z]/g, '').localeCompare(
       b.name.toLowerCase().replace(/[^a-z]/g, ''),

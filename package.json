@@ -7,11 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sync": "npm run sync:all",
-    "sync:all": "curl -s -X POST http://localhost:3000/api/sync/all -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:events": "curl -s -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:groups": "curl -s -X POST http://localhost:3000/api/sync/groups -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:sponsors": "curl -s -X POST http://localhost:3000/api/sync/sponsors -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
+    "test": "node --test tests/local-store.test.mjs",
+    "sync": "node scripts/sync.mjs all",
+    "sync:all": "node scripts/sync.mjs all",
+    "sync:events": "node scripts/sync.mjs events",
+    "sync:groups": "node scripts/sync.mjs groups",
+    "sync:sponsors": "node scripts/sync.mjs sponsors",
+    "emulator": "node scripts/emulator.mjs start",
+    "emulator:setup": "node scripts/emulator.mjs setup"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",

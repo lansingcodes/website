@@ -1,4 +1,4 @@
-import { getFirestore } from '@/lib/firebase/admin'
+import { getStore } from '@/lib/store'
 
 export interface Sponsor {
   id: string
@@ -10,10 +10,5 @@ export interface Sponsor {
 }
 
 export async function getAllSponsors(): Promise<Sponsor[]> {
-  const db = getFirestore()
-  const snapshot = await db.collection('sponsors').orderBy('name', 'asc').get()
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as Omit<Sponsor, 'id'>),
-  }))
+  return getStore().listDocs<Omit<Sponsor, 'id'>>('sponsors', { orderBy: 'name' })
 }
