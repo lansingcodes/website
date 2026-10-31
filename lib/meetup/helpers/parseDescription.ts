@@ -9,9 +9,8 @@ export function parseDescription(originalDescription: string): string {
   if (!originalDescription) return ''
   const from = originalDescription.indexOf(breakPoint)
   const to = originalDescription.lastIndexOf(breakPoint)
-  const description = originalDescription.substring(
-    from === -1 ? 0 : from + breakPoint.length,
-    to === -1 ? originalDescription.length : to,
-  )
+  const start = from === -1 ? 0 : from + breakPoint.length
+  const end = to === from ? originalDescription.length : to
+  const description = originalDescription.slice(start, end)
   return description.replace(/\\n/g, '\n').replace(/\\/g, '')
 }
