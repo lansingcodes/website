@@ -17,9 +17,9 @@ export function icalToEvents(groupKey: string, ical: string): Record<string, Omi
     if (!calendar.VEVENT) return
     ;(calendar.VEVENT as Record<string, string>[]).forEach((vevent) => {
       const id = vevent.UID
-      if (!id) return
+      if (!id) throw new Error('Meetup event is missing UID')
       const startTime = parseStartTime(vevent)
-      if (!startTime) return
+      if (startTime === undefined || !Number.isFinite(startTime)) throw new Error(`Meetup event ${id} has an invalid DTSTART`)
       const event = {
         id,
         group: groupKey,
