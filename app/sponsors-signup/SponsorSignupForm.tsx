@@ -145,6 +145,7 @@ export default function SponsorSignupForm() {
                         id="invoice-contact-name"
                         name="invoice-contact-name"
                         type="text"
+                        required
                         className="rounded px-10"
                       />
                       <label htmlFor="invoice-contact-email" className="m-1 p-3 text-white">
@@ -152,8 +153,9 @@ export default function SponsorSignupForm() {
                       </label>
                       <input
                         id="invoice-contact-email"
-                        name="contact-email"
+                        name="invoice-contact-email"
                         type="email"
+                        required
                         className="rounded px-10"
                       />
                     </>
