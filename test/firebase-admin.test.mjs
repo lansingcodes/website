@@ -6,7 +6,7 @@ import { getFirebaseAdmin, getFirestore } from '../lib/firebase/admin.ts'
 
 const names = [
   'FIREBASE_SERVICE_ACCOUNT', 'FIREBASE_PROJECT_ID',
-  'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY'
+  'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY', 'FIRESTORE_EMULATOR_HOST'
 ]
 const previous = Object.fromEntries(names.map(name => [name, process.env[name]]))
 
@@ -44,4 +44,13 @@ test('initializes Firebase Admin from service account JSON', () => {
   assert.equal(app.options.databaseURL, 'https://demo-lansingcodes.firebaseio.com')
   assert.equal(getFirebaseAdmin(), app)
   assert.equal(getFirestore().projectId, 'demo-lansingcodes')
+})
+
+test('uses the local Firestore emulator without a service account', () => {
+  for (const name of names) delete process.env[name]
+  process.env.FIREBASE_PROJECT_ID = 'demo-lansingcodes'
+  process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8085'
+
+  const app = getFirebaseAdmin()
+  assert.equal(app.options.projectId, 'demo-lansingcodes')
 })
