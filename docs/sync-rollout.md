@@ -1,24 +1,19 @@
 # Firestore sync rollout and recovery
 
-The active `website` deployment writes the `events`, `groups`, and `sponsors`
-collections. The sync replaces each collection from Meetup feeds or the
-repository JSON files. Use this checklist for a staging rehearsal and before
+After the JSON groups/sponsors change, the website sync writes only the `events`
+collection from Meetup feeds. The frontend reads groups and sponsors directly
+from repository JSON. Check for older deployments that may still write the legacy
+Firestore collections. Use this checklist for a staging rehearsal and before
 the first production sync after a code change.
 
 ## Combined sync failure results
 
-`POST /api/sync/all` waits for all three collection writers to finish. On a
-failure it returns HTTP 500 with an `outcomes` object for `events`, `groups`,
-and `sponsors`. `complete` means that writer returned successfully;
-`failed_or_partial` means it threw and may already have changed some documents.
-The route also logs the collection-specific errors and all outcomes. The
-scheduled Netlify function treats the HTTP 500 as a failed invocation.
-
-The three collection writes are not an atomic transaction. If one fails, check
-the reported outcomes and inspect all three collections before retrying. A
-successful retry can reconcile each collection from its source, but an
-interrupted writer may require manual review. Do not interpret HTTP 500 as
-proof that no Firestore documents changed.
+`POST /api/sync/all` now runs only the event writer. On a failure it returns
+HTTP 500 with `events: failed_or_partial`. That status means the writer threw
+and may already have changed documents. The route logs the event error and
+outcome; the scheduled Netlify function treats HTTP 500 as a failed invocation.
+Check the event collection before retrying. Do not interpret HTTP 500 as proof
+that no Firestore documents changed.
 
 ## Admin instructions for this change
 

@@ -36,7 +36,7 @@ agent-browser install  # Download Chromium
 
 - **Framework**: Next.js 16 App Router, React 19, TypeScript
 - **Styling**: Tailwind CSS v4 — theme configured via CSS variables in `app/globals.css` (not a JS config file)
-- **Data**: Firebase Firestore, read server-side only via Firebase Admin SDK — no client-side Firebase. All access goes through `getStore()` in `lib/store/`; `DATA_STORE=local` swaps in a JSON-file store and `DATA_STORE=emulator` uses the local Firestore emulator (dev only)
+- **Data**: Events use Firebase Firestore, read server-side only via Firebase Admin SDK — no client-side Firebase. Event access goes through `getStore()` in `lib/store/`; `DATA_STORE=local` swaps in a JSON-file event store and `DATA_STORE=emulator` uses the local Firestore emulator (dev only). Groups and sponsors load from repository JSON.
 - **Rendering**: SSR on every request (`export const dynamic = 'force-dynamic'` on home page)
 - **Deployment**: Netlify via `@netlify/plugin-nextjs`
   - Merges to `main` deploy to staging (Netlify project `lansingcodes-staging`, Firebase `lansing-codes-staging`); PRs get deploy previews there
@@ -65,11 +65,11 @@ Copy `.env.local.example` to `.env.local` and fill in:
 | `app/layout.tsx` | Root layout — Navigation, Footer, metadata, Google Fonts |
 | `app/globals.css` | Tailwind v4 theme + global CSS + custom utility classes |
 | `lib/firebase/admin.ts` | Firebase Admin singleton (server only) |
-| `lib/store/` | `getStore()` — data store abstraction: Firestore (real or emulator), or local JSON files when `DATA_STORE=local` |
+| `lib/store/` | `getStore()` — event store abstraction: Firestore (real or emulator), or local JSON files when `DATA_STORE=local` |
 | `scripts/emulator.mjs` | Firestore emulator setup (prerequisite checks) and start (with persistence in `.emulator-data/`) |
-| `lib/firestore/events.ts` | `getUpcomingEvents()` — next 4 weeks from Firestore |
-| `lib/firestore/groups.ts` | `getAllGroups()` |
-| `lib/firestore/sponsors.ts` | `getAllSponsors()` |
+| `lib/firestore/events.ts` | `getUpcomingEvents()` — next 4 weeks from the selected event store |
+| `lib/data/groups.ts` | `getAllGroups()` — reads from `data/groups.json` |
+| `lib/data/sponsors.ts` | `getAllSponsors()` — reads from `data/sponsors.json` |
 | `lib/meetup/` | Meetup iCal scraping (axios + ical2json + moment-timezone) |
 | `lib/api/auth.ts` | `checkSyncSecret()` — validates Bearer token on sync routes |
 | `data/groups.json` | 11 tech group definitions (source of truth for group metadata) |
@@ -87,9 +87,7 @@ All require `Authorization: Bearer $SYNC_SECRET` header.
 | Route | Action |
 |-------|--------|
 | `POST /api/sync/events` | Scrape Meetup iCal feeds → write to Firestore `events` collection |
-| `POST /api/sync/groups` | Write `data/groups.json` → Firestore `groups` collection |
-| `POST /api/sync/sponsors` | Write `data/sponsors.json` → Firestore `sponsors` collection |
-| `POST /api/sync/all` | Run all three above in parallel |
+| `POST /api/sync/all` | Run event sync |
 
 ## Source Repos (Reference Only)
 

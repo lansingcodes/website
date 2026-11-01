@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkSyncSecret } from '@/lib/api/auth'
 import { syncEvents } from '@/lib/sync/events'
-import { syncGroups } from '@/lib/sync/groups'
-import { syncSponsors } from '@/lib/sync/sponsors'
 import { runAllSyncs } from '@/lib/sync/all'
 
 export async function POST(request: NextRequest) {
@@ -12,8 +10,6 @@ export async function POST(request: NextRequest) {
 
   const { outcomes, failures } = await runAllSyncs({
     events: syncEvents,
-    groups: syncGroups,
-    sponsors: syncSponsors,
   })
   if (failures.length > 0) {
     for (const { collection, error } of failures) {

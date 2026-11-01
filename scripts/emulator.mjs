@@ -84,7 +84,7 @@ Emulator ready. Next steps:
   1. Add DATA_STORE=emulator to .env.local
   2. npm run emulator      (Emulator UI: http://127.0.0.1:4000)
   3. npm run dev           (in another terminal)
-  4. npm run sync          (populate events, groups, and sponsors)
+  4. npm run sync          (populate events; groups and sponsors come from JSON)
 `)
 }
 

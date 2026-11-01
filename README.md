@@ -138,29 +138,20 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the
 site. The page will reload automatically as you edit files.
 
-> **Note:** The site will look empty until you sync data (next step). That's
-> normal — the events, groups, and sponsors all come from Firestore.
+> **Note:** The event list will be empty until you sync data (next step).
+> Groups and sponsors load directly from the repository JSON files.
 
 ### Syncing data
 
-The site reads event, group, and sponsor data from Firebase Firestore. Your
-Firestore database starts empty, so you need to populate it. With the dev
-server running, open a second terminal and run:
+Groups and sponsors are read directly from `data/groups.json` and `data/sponsors.json`.
+Events are synced from Meetup iCal feeds into Firebase Firestore. To populate
+events for local development, run:
 
 ```sh
 npm run sync
 ```
 
-This scrapes Meetup iCal feeds and writes events, groups, and sponsors to your
-Firestore database. Refresh the browser and you should see the full site.
-
-You can also sync individual collections:
-
-```sh
-npm run sync:events    # just events
-npm run sync:groups    # just groups
-npm run sync:sponsors  # just sponsors
-```
+(or `npm run sync:events`). Refresh the browser and you should see the full site.
 
 These scripts automatically read `SYNC_SECRET` from your `.env.local` file.
 
@@ -194,8 +185,8 @@ After a pull request is reviewed and merged to `main`, Netlify automatically
 builds and publishes the staging site. Production is deployed from `main` by
 the manually triggered [Deploy to production](.github/workflows/deploy-production.yml)
 GitHub Actions workflow after its environment approval. The Netlify scheduled
-function runs every 2 hours on each published site to sync Meetup events,
-groups, and sponsors into that site's Firestore project.
+function runs every 2 hours on each published site to sync Meetup events into
+that site's Firestore project.
 
 For both staging and production, Netlify runs `npm run build` and deploys the
 resulting `.next` directory via `@netlify/plugin-nextjs`.

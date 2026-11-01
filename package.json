@@ -13,8 +13,6 @@
     "sync": "node scripts/sync.mjs all",
     "sync:all": "node scripts/sync.mjs all",
     "sync:events": "node scripts/sync.mjs events",
-    "sync:groups": "node scripts/sync.mjs groups",
-    "sync:sponsors": "node scripts/sync.mjs sponsors",
     "emulator": "node scripts/emulator.mjs start",
     "emulator:setup": "node scripts/emulator.mjs setup"
   },

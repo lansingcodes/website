@@ -1,9 +1,8 @@
 import LogoSmall from '@/components/logos/LogoSmall'
 import { formatReadableDateTime } from '@/lib/utils/formatDateTime'
 import { cleanEventDescription } from '@/lib/utils/cleanEventDescription'
+import type { Event, Group } from '@/lib/types'
 import { boldMarkdownToHtml } from '@/lib/utils/boldMarkdownToHtml'
-import type { Event } from '@/lib/firestore/events'
-import type { Group } from '@/lib/firestore/groups'
 
 interface CardEventProps {
   event: Event

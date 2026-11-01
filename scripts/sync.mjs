@@ -1,8 +1,8 @@
 // Triggers a /api/sync/* route on the local dev server.
-// Usage: node scripts/sync.mjs [all|events|groups|sponsors]
+// Usage: node scripts/sync.mjs [all|events]
 import { readFileSync } from 'node:fs'
 
-const targets = ['all', 'events', 'groups', 'sponsors']
+const targets = ['all', 'events']
 const target = process.argv[2] ?? 'all'
 
 if (!targets.includes(target)) {
