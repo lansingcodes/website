@@ -2,10 +2,13 @@ import { getStore } from '@/lib/store'
 import type { StoredDoc } from '@/lib/store/types'
 import { fetchEventsForAllGroups } from '@/lib/meetup/fetchEventsForAllGroups'
 
-// Full-replace sync: fetch all current Meetup events and replace the
-// events collection (stale events are removed).
-export async function syncEvents() {
+export { EventSyncInProgressError } from '@/lib/store/firestore'
+
+// The selected store protects the full fetch-and-replace operation.
+export async function syncEvents(
+  loadEvents: typeof fetchEventsForAllGroups = fetchEventsForAllGroups,
+) {
   await getStore().syncEvents(
-    async () => fetchEventsForAllGroups() as Promise<Record<string, StoredDoc>>,
+    async () => loadEvents() as Promise<Record<string, StoredDoc>>,
   )
 }

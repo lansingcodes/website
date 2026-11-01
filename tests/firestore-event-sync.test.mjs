@@ -3,7 +3,8 @@ import { randomUUID } from 'node:crypto'
 import * as fs from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import test from 'node:test'
-import admin from 'firebase-admin'
+import { deleteApp, initializeApp } from 'firebase-admin/app'
+import { getFirestore } from 'firebase-admin/firestore'
 import ts from 'typescript'
 
 const loadModule = createRequire(import.meta.url)
@@ -25,8 +26,8 @@ test('Firestore event sync preserves failed feeds and rejects overlapping or sta
   const host = process.env.FIRESTORE_EMULATOR_HOST
   assert.match(host, /^(127\.0\.0\.1|localhost):\d+$/)
   // A distinct demo project keeps this test separate from other emulator users.
-  const app = admin.initializeApp({ projectId: 'demo-codex-sync-safety' }, `sync-safety-${randomUUID()}`)
-  const db = app.firestore()
+  const app = initializeApp({ projectId: 'demo-codex-sync-safety' }, `sync-safety-${randomUUID()}`)
+  const db = getFirestore(app)
   db.settings({ host, ssl: false })
   const exports = {}
   // Run in this realm: Firestore checks that transaction callbacks return
@@ -72,6 +73,6 @@ test('Firestore event sync preserves failed feeds and rejects overlapping or sta
     const docs = await eventsRef.listDocuments()
     await Promise.all(docs.map((doc) => doc.delete()))
     await lockRef.delete()
-    await app.delete()
+    await deleteApp(app)
   }
 })

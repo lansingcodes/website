@@ -1,4 +1,5 @@
-import admin from 'firebase-admin'
+import { cert, getApps, initializeApp, type App } from 'firebase-admin/app'
+import { getFirestore as adminGetFirestore } from 'firebase-admin/firestore'
 
 const APP_NAME = 'lansing-codes'
 // "demo-" projects are emulator-only and can never reach real Firebase resources.
@@ -25,18 +26,22 @@ function getCredentials() {
   }
 }
 
-export function getFirebaseAdmin(): admin.app.App {
-  const existing = admin.apps.find((a) => a?.name === APP_NAME)
+export function getFirebaseAdmin(): App {
+  const existing = getApps().find((app) => app.name === APP_NAME)
   if (existing) return existing
 
   // DATA_STORE=emulator: the Admin SDK routes Firestore calls to
   // FIRESTORE_EMULATOR_HOST, and no credentials are needed.
   if (process.env.DATA_STORE === 'emulator') {
     process.env.FIRESTORE_EMULATOR_HOST ??= '127.0.0.1:8080'
-    return admin.initializeApp({ projectId: EMULATOR_PROJECT_ID }, APP_NAME)
+    return initializeApp({ projectId: EMULATOR_PROJECT_ID }, APP_NAME)
   }
 
   const { projectId, clientEmail, privateKey } = getCredentials()
+
+  if (process.env.FIRESTORE_EMULATOR_HOST && projectId) {
+    return initializeApp({ projectId }, APP_NAME)
+  }
 
   if (!projectId || !clientEmail || !privateKey) {
     throw new Error(
@@ -44,9 +49,9 @@ export function getFirebaseAdmin(): admin.app.App {
     )
   }
 
-  return admin.initializeApp(
+  return initializeApp(
     {
-      credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+      credential: cert({ projectId, clientEmail, privateKey }),
       databaseURL: `https://${projectId}.firebaseio.com`,
     },
     APP_NAME,
@@ -54,5 +59,5 @@ export function getFirebaseAdmin(): admin.app.App {
 }
 
 export function getFirestore() {
-  return getFirebaseAdmin().firestore()
+  return adminGetFirestore(getFirebaseAdmin())
 }
