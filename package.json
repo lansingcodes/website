@@ -10,9 +10,11 @@
     "lint": "eslint",
     "test": "tsx --test test/*.test.mjs test/*.test.ts",
     "test:stack": "bash scripts/run-sync-safety-smoke.sh",
-    "sync": "npm run sync:all",
-    "sync:all": "curl --fail-with-body -sS -X POST http://localhost:3000/api/sync/all -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\"",
-    "sync:events": "curl --fail-with-body -sS -X POST http://localhost:3000/api/sync/events -H \"Authorization: Bearer $(grep '^SYNC_SECRET=' .env.local | cut -d'=' -f2-)\""
+    "sync": "node scripts/sync.mjs all",
+    "sync:all": "node scripts/sync.mjs all",
+    "sync:events": "node scripts/sync.mjs events",
+    "emulator": "node scripts/emulator.mjs start",
+    "emulator:setup": "node scripts/emulator.mjs setup"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",

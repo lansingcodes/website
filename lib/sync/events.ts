@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import { getFirestore } from '@/lib/firebase/admin'
 import { fetchEventsForAllGroups } from '@/lib/meetup/fetchEventsForAllGroups'
+import { getStore } from '@/lib/store'
+import { localStore } from '@/lib/store/local'
+import type { StoredDoc } from '@/lib/store/types'
 
 const LEASE_MS = 10 * 60 * 1000
 const WRITES_PER_TRANSACTION = 200
@@ -16,6 +19,14 @@ export class EventSyncInProgressError extends Error {
 // Every write transaction also checks ownership, so a process that outlives
 // its lease cannot overwrite a newer run's events.
 export async function syncEvents(loadEvents: typeof fetchEventsForAllGroups = fetchEventsForAllGroups) {
+  // DATA_STORE=local (dev only) queues its own writes, so it needs no lease.
+  // Firestore, including the emulator, uses the lease below.
+  if (getStore() === localStore) {
+    const events = await loadEvents()
+    await localStore.replaceCollection('events', events as Record<string, StoredDoc>)
+    return
+  }
+
   const db = getFirestore()
   const lockRef = db.collection('_sync_locks').doc('events')
   const owner = randomUUID()
