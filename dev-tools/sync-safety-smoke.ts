@@ -2,6 +2,11 @@ import assert from 'node:assert/strict'
 import { deleteApp } from 'firebase-admin/app'
 import { getFirebaseAdmin, getFirestore } from '../lib/firebase/admin'
 import { EventSyncInProgressError, syncEvents } from '../lib/sync/events'
+import { runAllSyncs } from '../lib/sync/all'
+import { syncGroups } from '../lib/sync/groups'
+import { syncSponsors } from '../lib/sync/sponsors'
+import groups from '../data/groups.json'
+import sponsors from '../data/sponsors.json'
 
 if (!['127.0.0.1:8085', 'localhost:8085'].includes(process.env.FIRESTORE_EMULATOR_HOST || '') ||
     process.env.FIREBASE_PROJECT_ID !== 'demo-lansingcodes') {
@@ -13,6 +18,8 @@ async function main () {
   const eventsRef = db.collection('events')
   const existing = eventsRef.doc('existing-event')
   const replacement = eventsRef.doc('replacement-event')
+  const groupsRef = db.collection('groups')
+  const sponsorsRef = db.collection('sponsors')
 
   try {
     await existing.set({ group: 'devops', name: 'Existing event', startTime: Date.now() })
@@ -59,8 +66,27 @@ async function main () {
     assert.equal((await eventsRef.doc('newer-event').get()).exists, true)
     assert.equal((await eventsRef.doc('older-event').get()).exists, false)
     console.log('PASS: an expired older run cannot replace a newer successful sync')
+
+    await groupsRef.doc('old-group').set({ name: 'Old group' })
+    await sponsorsRef.doc('old-sponsor').set({ name: 'Old sponsor' })
+    const combined = await runAllSyncs({
+      events: () => syncEvents(async () => { throw new Error('Meetup unavailable') }),
+      groups: syncGroups,
+      sponsors: syncSponsors,
+    })
+    assert.deepEqual(combined.outcomes, {
+      events: 'failed_or_partial', groups: 'complete', sponsors: 'complete',
+    })
+    assert.equal((await eventsRef.doc('newer-event').get()).exists, true)
+    assert.equal((await groupsRef.doc('old-group').get()).exists, false)
+    assert.equal((await sponsorsRef.doc('old-sponsor').get()).exists, false)
+    assert.equal((await groupsRef.doc(Object.keys(groups)[0]).get()).exists, true)
+    assert.equal((await sponsorsRef.doc(Object.keys(sponsors)[0]).get()).exists, true)
+    console.log('PASS: failed combined sync waits for writers and identifies changed collections')
   } finally {
     await db.recursiveDelete(eventsRef)
+    await db.recursiveDelete(groupsRef)
+    await db.recursiveDelete(sponsorsRef)
     await db.recursiveDelete(db.collection('_sync_locks'))
     await db.terminate()
     await deleteApp(getFirebaseAdmin())
