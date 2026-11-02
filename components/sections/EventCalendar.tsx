@@ -49,41 +49,48 @@ function buildCalendar(events: Event[], now: number): Date[][] {
 }
 
 function eventsOnDay(day: Date, events: Event[]): EventEntry[] {
-  return events
-    .filter((event) => isSameDay(event.startTime, day, { in: inLansing }))
-    // Group events into three display types:
-    //  - "community": multiple groups hosting the same event at the same time
-    //    (matched by normalized name + identical startTime)
-    //  - "group": same group hosting multiple events on one day
-    //  - "single": a standalone event (the default)
-    .reduce((acc: EventEntry[], event) => {
-      const communityEvent = acc.find((candidate) => {
-        const first = candidate.events[0]
-        return (
-          ['single', 'community'].includes(candidate.type) &&
-          sameCommunityEvent(first, event)
-        )
-      })
-      if (communityEvent) {
-        communityEvent.type = 'community'
-        communityEvent.events.push(event)
-        return acc
-      }
+  type IndexedEntry = EventEntry & { firstIndex: number }
+  const dayEvents = events.filter((event) =>
+    isSameDay(event.startTime, day, { in: inLansing }),
+  )
+  const matchingEvents: IndexedEntry[] = []
 
-      const groupEvent = acc.find(
-        (candidate) =>
-          ['single', 'group'].includes(candidate.type) &&
-          candidate.events[0].group === event.group,
-      )
-      if (groupEvent) {
-        groupEvent.type = 'group'
-        groupEvent.events.push(event)
-        return acc
-      }
+  // Find shared events before grouping a group's other events on this day.
+  dayEvents.forEach((event, index) => {
+    const match = matchingEvents.find((entry) =>
+      sameCommunityEvent(entry.events[0], event),
+    )
+    if (match) {
+      match.events.push(event)
+    } else {
+      matchingEvents.push({ type: 'single', events: [event], firstIndex: index })
+    }
+  })
 
-      acc.push({ type: 'single', events: [event] })
-      return acc
-    }, [])
+  const entries: IndexedEntry[] = matchingEvents
+    .filter((entry) => entry.events.length > 1)
+    .map((entry) => ({ ...entry, type: 'community' }))
+
+  for (const entry of matchingEvents.filter(
+    (candidate) => candidate.events.length === 1,
+  )) {
+    const event = entry.events[0]
+    const groupEntry = entries.find(
+      (candidate) =>
+        candidate.type !== 'community' &&
+        candidate.events[0].group === event.group,
+    )
+    if (groupEntry) {
+      groupEntry.type = 'group'
+      groupEntry.events.push(event)
+    } else {
+      entries.push(entry)
+    }
+  }
+
+  return entries
+    .sort((first, second) => first.firstIndex - second.firstIndex)
+    .map(({ type, events }) => ({ type, events }))
 }
 
 export default function EventCalendar({ events, groups, now }: EventCalendarProps) {
