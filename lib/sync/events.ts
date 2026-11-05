@@ -7,6 +7,7 @@ import type { StoredDoc } from '@/lib/store/types'
 
 const LEASE_MS = 10 * 60 * 1000
 const WRITES_PER_TRANSACTION = 200
+let pendingLocalSync: Promise<void> = Promise.resolve()
 
 export class EventSyncInProgressError extends Error {
   constructor() {
@@ -19,11 +20,15 @@ export class EventSyncInProgressError extends Error {
 // Every write transaction also checks ownership, so a process that outlives
 // its lease cannot overwrite a newer run's events.
 export async function syncEvents(loadEvents: typeof fetchEventsForAllGroups = fetchEventsForAllGroups) {
-  // DATA_STORE=local (dev only) queues its own writes, so it needs no lease.
-  // Firestore, including the emulator, uses the lease below.
+  // Queue the fetch as well as the write: an older, slower feed must not
+  // publish after a newer local sync has completed.
   if (getStore() === localStore) {
-    const events = await loadEvents()
-    await localStore.replaceCollection('events', events as Record<string, StoredDoc>)
+    const sync = pendingLocalSync.catch(() => {}).then(async () => {
+      const events = await loadEvents()
+      await localStore.replaceCollection('events', events as Record<string, StoredDoc>)
+    })
+    pendingLocalSync = sync
+    await sync
     return
   }
 

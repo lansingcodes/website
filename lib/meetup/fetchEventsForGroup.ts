@@ -3,6 +3,7 @@ import { icalToEvents } from './icalToEvents'
 
 const meetupClient = axios.create({
   baseURL: 'https://www.meetup.com',
+  timeout: 15_000,
 })
 
 export async function fetchEventsForGroup(
